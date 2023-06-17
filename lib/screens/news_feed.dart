@@ -23,32 +23,32 @@ class _NewsFeedState extends State<NewsFeed> {
 
   TextEditingController searchController = new TextEditingController();
 
-  List<String > lispath=['https://newsapi.org/v2/everything?domains=wsj.com&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?country=in&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=920d527c3d8642eea92327e0e59936ef', 'https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?category=sports&apiKey=920d527c3d8642eea92327e0e59936ef'];
+  List<String > lispath=['https://newsapi.org/v2/everything?domains=wsj.com&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?country=in&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=920d527c3d8642eea92327e0e59936ef', 'https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?category=sport&apiKey=920d527c3d8642eea92327e0e59936ef'];
 
   bool isLoading = true;
   getNewsByQuery(String query) async {
     try{
-    // String url =
-    // "https://newsapi.org/v2/everything?domains=wsj.com&apiKey=920d527c3d8642eea92327e0e59936ef";  //how add category for this api , any key ?
-    // String url="https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=920d527c3d8642eea92327e0e59936ef";
+      // String url =
+      // "https://newsapi.org/v2/everything?domains=wsj.com&apiKey=920d527c3d8642eea92327e0e59936ef";  //how add category for this api , any key ?
+      // String url="https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=920d527c3d8642eea92327e0e59936ef";
 
-    Response response = await get(Uri.parse(query));
+      Response response = await get(Uri.parse(query));
 
-    Map data = jsonDecode(response.body);
-    setState(() {
-      // newsModelList.clear();
-      data["articles"].forEach((element) {
-        NewsQueryModel newsQueryModel = NewsQueryModel();
-        newsQueryModel = NewsQueryModel.fromMap(element);
-        newsModelList.add(newsQueryModel);
+      Map data = jsonDecode(response.body);
+      setState(() {
+        newsModelList.clear();
+        data["articles"].forEach((element) {
+          NewsQueryModel newsQueryModel = NewsQueryModel();
+          newsQueryModel = NewsQueryModel.fromMap(element);
+          newsModelList.add(newsQueryModel);
 
           print(newsModelList.length);
 
-        setState(() {
-          isLoading = false;
+          setState(() {
+            isLoading = false;
+          });
         });
       });
-    });
     }
     on Exception catch(e){
       print('hello'+e.toString());
@@ -102,12 +102,12 @@ class _NewsFeedState extends State<NewsFeed> {
                   title: Padding(
                     padding: const EdgeInsets.fromLTRB(0,0,0,4),
                     child: Text("Welcome Back!!",
-                    style: TextStyle(
-                      fontFamily: 'Source Serif 4',
-                      fontSize: 30,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1e293b),
-                    ),),
+                      style: TextStyle(
+                        fontFamily: 'Source Serif 4',
+                        fontSize: 30,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1e293b),
+                      ),),
                   ),
                   subtitle: Text("Explore The World with One Click",
                     style: TextStyle(
@@ -176,16 +176,16 @@ class _NewsFeedState extends State<NewsFeed> {
                           child: AnimatedContainer(
                             duration: Duration(milliseconds: 150),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12),
                                 color: selectedCategoryIndex==index ? Color(0xff4c4ddc) : Color(0xff0f172a)),
                             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                             margin: EdgeInsets.symmetric(horizontal: 6),
                             child: Text(categoryItem[index],
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
                                 color: selectedCategoryIndex==index ? Colors.white : Colors.white,
-                            ),),
+                              ),),
                           ),
                         );
                       }),
@@ -277,30 +277,30 @@ class _NewsFeedState extends State<NewsFeed> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
                                     child: Image.network(newsModelList[index].newsImg,
-                                    height: 150,
-                                    width: 130,
-                                    fit: BoxFit.cover,),
+                                      height: 150,
+                                      width: 130,
+                                      fit: BoxFit.cover,),
                                   ),
                                 ),
 
-                                SizedBox(width: 20,),
+                                SizedBox(width: 15,),
 
                                 Padding(
-                                  padding: const EdgeInsets.fromLTRB(0, 5,4,5),
+                                  padding: const EdgeInsets.fromLTRB(0, 5,0,5),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         child: SizedBox(
                                           width: 200,
-                                          child: Text(newsModelList[index].newsHead,
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700,
-                                            color: Color(0xff0f172a),
-                                          ),),
+                                          child: Text(getTruncatedTitle(newsModelList[index].newsHead, 60),
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700,
+                                              color: Color(0xff0f172a),
+                                            ),),
                                         ),
                                       ),
 
@@ -350,5 +350,10 @@ class _NewsFeedState extends State<NewsFeed> {
         ),
       ),
     );
+  }
+  String getTruncatedTitle(String actualString, int maxLetters) {
+    return actualString.length > maxLetters
+        ? actualString.substring(0, maxLetters) + "..."
+        : actualString;
   }
 }
