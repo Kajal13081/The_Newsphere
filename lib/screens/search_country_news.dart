@@ -16,7 +16,7 @@ class _SearchCountryNewsState extends State<SearchCountryNews> {
   @override
   Widget build(BuildContext context) {
     TextEditingController controller = new TextEditingController();
-    // final model = context.watch<CountryProvider>();
+    final model = context.watch<CountryProvider>();
 
     Future<void> fetchCountryNews() async {
       await context.read<CountryProvider>().getCountryNews(
@@ -60,8 +60,10 @@ class _SearchCountryNewsState extends State<SearchCountryNews> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                   child: TextField(
+                    controller: controller,
                     onSubmitted: (value) {
                       fetchCountryNews();
+                      controller.text = value;
                     },
                     style: TextStyle(color: Color(0xFF4c4ddc),
                         fontWeight: FontWeight.w500,
@@ -73,7 +75,7 @@ class _SearchCountryNewsState extends State<SearchCountryNews> {
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
                       ),
-                      hintText: "Search Country News",
+                      hintText: "Search News by Country Code eg. 'in'",
                       prefixIcon: Icon(Icons.search),
                       prefixIconColor: Color(0xFF64748b),
                       hintStyle: TextStyle(
@@ -109,17 +111,15 @@ class _SearchCountryNewsState extends State<SearchCountryNews> {
                   ),
                 ),
                 SizedBox(
-                  height: 25,
+                  height: 10,
                 ),
 
-                // model.isLoading?Center(
-                //   child: CircularProgressIndicator(
-                //     backgroundColor: Color(0xFF4c4ddc),
-                //   ),
-                // )
-                //     : const SizedBox.shrink(),
-                //
-                // SizedBox(height: 30,),
+                model.isLoading?Center(
+                  child: CircularProgressIndicator(
+                    backgroundColor: Color(0xFF4c4ddc),
+                  ),
+                )
+                    : const SizedBox.shrink(),
 
                 Container(
                   padding: EdgeInsets.all(16),

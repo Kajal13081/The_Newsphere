@@ -17,7 +17,7 @@ class NewsApi {
       final response = await Dio().get(
           'https://newsapi.org/v2/top-headlines?country=$countryname&apiKey=920d527c3d8642eea92327e0e59936ef');
       print('hello');
-      final data = response.data;
+      final data = response.data['articles'];
       return List<NewsQueryModel>.from(data.map((item) => NewsQueryModel.fromMap(item)));
     } catch (e) {
       throw e;

@@ -9,10 +9,14 @@ class CountryProvider extends ChangeNotifier{
 
   NewsApi _newsApi = NewsApi();
 
+  bool isLoading = false;
+
+
   List<NewsQueryModel>? _newsQueryModel;
   List<NewsQueryModel>? get newsQueryModel => _newsQueryModel;
 
   void setLoading(bool value) {
+    isLoading = value;
     notifyListeners();
   }
 
@@ -23,6 +27,9 @@ class CountryProvider extends ChangeNotifier{
       final List<NewsQueryModel> response =
       await _newsApi.getCountry(countryname: countryname);
       _newsQueryModel = response;
+      notifyListeners();
+
+      setLoading(false);
 
       Navigator.pushNamed(
         ctx,

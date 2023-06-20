@@ -227,7 +227,7 @@ class _NewsFeedState extends State<NewsFeed> {
                 ),
 
                 SizedBox(
-                  height: 25,
+                  height: 20,
                 ),
 
                 Padding(
