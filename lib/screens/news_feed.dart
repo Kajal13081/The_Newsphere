@@ -7,15 +7,24 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:news_app/models/model.dart';
 import 'package:news_app/screens/newsView.dart';
+import 'package:news_app/screens/search_country_news.dart';
 
-class NewsFeed extends StatefulWidget{
+import 'news_web_view.dart';
+
+class NewsFeed extends StatefulWidget {
   @override
   State<NewsFeed> createState() => _NewsFeedState();
 }
 
 class _NewsFeedState extends State<NewsFeed> {
-
-  List<String> categoryItem = ["Top News" , "India", "World News" , "Technology", "Business", "Sports"];
+  List<String> categoryItem = [
+    "Top News",
+    "India",
+    "World News",
+    "Technology",
+    "Business",
+    "Sports"
+  ];
   int selectedCategoryIndex = 0;
 
   List<NewsQueryModel> newsModelList = <NewsQueryModel>[];
@@ -23,15 +32,25 @@ class _NewsFeedState extends State<NewsFeed> {
 
   TextEditingController searchController = new TextEditingController();
 
-  List<String > lispath=['https://newsapi.org/v2/everything?domains=wsj.com&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?country=in&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=920d527c3d8642eea92327e0e59936ef', 'https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=920d527c3d8642eea92327e0e59936ef','https://newsapi.org/v2/top-headlines?category=sport&apiKey=920d527c3d8642eea92327e0e59936ef'];
+  List<String> listpath = [
+    'https://newsapi.org/v2/everything?domains=wsj.com&apiKey=920d527c3d8642eea92327e0e59936ef',
+    'https://newsapi.org/v2/top-headlines?country=in&apiKey=920d527c3d8642eea92327e0e59936ef',
+    'https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=920d527c3d8642eea92327e0e59936ef',
+    'https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=920d527c3d8642eea92327e0e59936ef',
+    'https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=920d527c3d8642eea92327e0e59936ef',
+    'https://newsapi.org/v2/top-headlines?category=sport&apiKey=920d527c3d8642eea92327e0e59936ef'
+  ];
 
-  bool isLoading = true;
+  bool isLoading = false;
   getNewsByQuery(String query) async {
-    try{
+    try {
       // String url =
       // "https://newsapi.org/v2/everything?domains=wsj.com&apiKey=920d527c3d8642eea92327e0e59936ef";  //how add category for this api , any key ?
       // String url="https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=920d527c3d8642eea92327e0e59936ef";
 
+      setState(() {
+        isLoading = true;
+      });
       Response response = await get(Uri.parse(query));
 
       Map data = jsonDecode(response.body);
@@ -41,23 +60,17 @@ class _NewsFeedState extends State<NewsFeed> {
           NewsQueryModel newsQueryModel = NewsQueryModel();
           newsQueryModel = NewsQueryModel.fromMap(element);
           newsModelList.add(newsQueryModel);
-
-          print(newsModelList.length);
-
-          setState(() {
-            isLoading = false;
-          });
+          isLoading = false;
         });
       });
+    } on Exception catch (e) {
+      print('hello' + e.toString());
     }
-    on Exception catch(e){
-      print('hello'+e.toString());
-    }
-
   }
 
   getNewsofIndia() async {
-    String url = "https://newsapi.org/v2/top-headlines?country=in&apiKey=920d527c3d8642eea92327e0e59936ef";
+    String url =
+        "https://newsapi.org/v2/top-headlines?country=in&apiKey=920d527c3d8642eea92327e0e59936ef";
     Response response = await get(Uri.parse(url));
     Map data = jsonDecode(response.body);
     setState(() {
@@ -68,17 +81,13 @@ class _NewsFeedState extends State<NewsFeed> {
         setState(() {
           isLoading = false;
         });
-
       });
     });
-
-
   }
 
   @override
   void initState() {
-
-    getNewsByQuery(lispath[0]);
+    getNewsByQuery(listpath[0]);
     getNewsofIndia();
 
     super.initState();
@@ -97,47 +106,83 @@ class _NewsFeedState extends State<NewsFeed> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 ListTile(
                   title: Padding(
-                    padding: const EdgeInsets.fromLTRB(0,0,0,4),
-                    child: Text("Welcome Back!!",
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+                    child: Text(
+                      "Welcome Back!!",
                       style: TextStyle(
                         fontFamily: 'Source Serif 4',
                         fontSize: 30,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF1e293b),
-                      ),),
+                      ),
+                    ),
                   ),
-                  subtitle: Text("Explore The World with One Click",
+                  subtitle: Text(
+                    "Explore The World with One Click",
                     style: TextStyle(
                       fontFamily: 'Outfit',
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF64748b),
-                    ),),
+                    ),
+                  ),
                 ),
 
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
 
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                   child: TextField(
                     onSubmitted: (value) {
-                      if ((searchController.text).replaceAll(" ", "") == "") {
-                        print("Blank search");
+                      if (value.isNotEmpty) {
+                        getNewsByQuery(
+                            'https://newsapi.org/v2/everything?q=$value&apiKey=920d527c3d8642eea92327e0e59936ef');
                       }
-                      else {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => NewsFeed()));
+                      else if(value == null){
+                        isLoading = false;
+                        showDialog(
+                          context: context,
+                          builder: (context) => Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                              height: 300,
+                              child: AlertDialog(
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                                title: Text('No item Found', style: TextStyle(color : Color(0xFF0f172a),
+                                    fontFamily: 'Source Serif 4',
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 20)),
+                                content: Text('The Article you are searching does not exist', style: TextStyle(color : Color(0xFF4c4ddc),
+                                    fontSize: 18,
+                                    fontFamily: 'Source Serif 4',
+                                    fontWeight: FontWeight.w600)),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: Text('OK', style: TextStyle(fontFamily: 'Source Serif 4',
+                                        fontWeight: FontWeight.w700,
+                                        color : Color(0xFF0f172a),
+                                        fontSize: 18),),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
                       }
                     },
-                    // controller: userNameController,
-                    // onSubmitted: (value) {
-                    //   fetchUserInfo();
-                    //   // Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetailScreen()));
-                    // },
-
-                    style: TextStyle(color: Color(0xFF4c4ddc)),
+                    style: TextStyle(color: Color(0xFF4c4ddc),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20),
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Color(0xdacdcfe0),
@@ -157,7 +202,33 @@ class _NewsFeedState extends State<NewsFeed> {
                   ),
                 ),
 
-                SizedBox(height: 30,),
+                SizedBox(height: 15,),
+
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SearchCountryNews()));
+                      },
+                      child: Text('Search news country wise',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color(0xff4c4ddc),
+                        fontWeight: FontWeight.w500,
+                      ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(
+                  height: 25,
+                ),
 
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
@@ -166,26 +237,32 @@ class _NewsFeedState extends State<NewsFeed> {
                     child: Row(
                       // crossAxisAlignment: CrossAxisAlignment.start,
                       children: List.generate(categoryItem.length, (index) {
-
-
                         return GestureDetector(
                           onTap: () {
-                            getNewsByQuery(lispath[index]);
-                            selectedCategoryIndex=index;// call api on each click
+                            getNewsByQuery(listpath[index]);
+                            selectedCategoryIndex =
+                                index; // call api on each click
                           },
                           child: AnimatedContainer(
                             duration: Duration(milliseconds: 150),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                color: selectedCategoryIndex==index ? Color(0xff4c4ddc) : Color(0xff0f172a)),
-                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                color: selectedCategoryIndex == index
+                                    ? Color(0xff4c4ddc)
+                                    : Color(0xff0f172a)),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 15),
                             margin: EdgeInsets.symmetric(horizontal: 6),
-                            child: Text(categoryItem[index],
+                            child: Text(
+                              categoryItem[index],
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500,
-                                color: selectedCategoryIndex==index ? Colors.white : Colors.white,
-                              ),),
+                                color: selectedCategoryIndex == index
+                                    ? Colors.white
+                                    : Colors.white,
+                              ),
+                            ),
                           ),
                         );
                       }),
@@ -193,7 +270,9 @@ class _NewsFeedState extends State<NewsFeed> {
                   ),
                 ),
 
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
 
                 // carousel
 
@@ -205,63 +284,83 @@ class _NewsFeedState extends State<NewsFeed> {
                     items: newsModelListCarousel.map((instance) {
                       return Builder(builder: (BuildContext context) {
                         return Container(
-
-                            child : Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)
-                                ),
-                                child : Stack(
-                                    children : [
-                                      ClipRRect(
-                                          borderRadius : BorderRadius.circular(10),
-                                          child : Image.network(instance.newsImg , fit: BoxFit.fitHeight, width: double.infinity,)
-                                      ) ,
-                                      Positioned(
-                                          left: 0,
-                                          right: 0,
-                                          bottom: 0,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => NewsWebView(instance.newsUrl.toString())));
+                              },
+                              child: Card(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Stack(children: [
+                                    ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: instance.newsImg != null
+                                            ? Image.network(
+                                          instance.newsImg.toString(),
+                                          fit: BoxFit.fitHeight,
+                                          width: double.infinity,
+                                        )
+                                            : Icon(
+                                          Icons.image,
+                                          size: double.infinity,
+                                        )),
+                                    Positioned(
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                              BorderRadius.circular(10),
+                                              gradient: LinearGradient(
+                                                  colors: [
+                                                    Colors.black12.withOpacity(0),
+                                                    Colors.black
+                                                  ],
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter)),
                                           child: Container(
-
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10),
-                                                gradient: LinearGradient(
-                                                    colors: [
-                                                      Colors.black12.withOpacity(0),
-                                                      Colors.black
-                                                    ],
-                                                    begin: Alignment.topCenter,
-                                                    end: Alignment.bottomCenter
-                                                )
-                                            ),
-                                            child : Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 5 , vertical: 10),
-                                                child:Container( margin: EdgeInsets.symmetric(horizontal: 10), child: Text(instance.newsHead , style: TextStyle(fontSize: 18 , color: Colors.white , fontWeight: FontWeight.bold),))
-                                            ),
-                                          )
-                                      ),
-                                    ]
-                                )
-                            )
-                        );
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 5, vertical: 10),
+                                              child: Container(
+                                                  margin: EdgeInsets.symmetric(
+                                                      horizontal: 10),
+                                                  child: Text(
+                                                    instance.newsHead.toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                        FontWeight.bold),
+                                                  ))),
+                                        )),
+                                  ])),
+                            ));
                       });
                     }).toList(),
                   ),
                 ),
 
-
-                Container(
+                isLoading == false
+                    ? Container(
                   padding: EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: List.generate(newsModelList.length, (index) {
+                    children:
+                    List.generate(newsModelList.length, (index) {
                       return GestureDetector(
-                        // onTap: () => Navigator.of(context).push(
-                        //   MaterialPageRoute(
-                        //     builder: (context) => NewsView(newsModelList[index]),
-                        //   ),
-                        // ),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => NewsView(
+                              model: newsModelList[index],
+                            ),
+                          ),
+                        ),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0,0,0,15),
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
                           child: Container(
                             width: size.width,
                             margin: EdgeInsets.symmetric(vertical: 5),
@@ -273,63 +372,101 @@ class _NewsFeedState extends State<NewsFeed> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.fromLTRB(5, 6.5,0,6.5),
+                                  padding: const EdgeInsets.fromLTRB(
+                                      5, 6.5, 0, 6.5),
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(newsModelList[index].newsImg,
+                                    borderRadius:
+                                    BorderRadius.circular(12),
+                                    child: newsModelList[index].newsImg !=
+                                        null
+                                        ? Image.network(
+                                      key: Key(newsModelList[index]
+                                          .newsImg
+                                          .toString()),
+                                      newsModelList[index]
+                                          .newsImg
+                                          .toString(),
                                       height: 150,
                                       width: 130,
-                                      fit: BoxFit.cover,),
+                                      fit: BoxFit.cover,
+                                    )
+                                        : Icon(
+                                      Icons.image,
+                                      size: 130,
+                                    ),
                                   ),
                                 ),
-
-                                SizedBox(width: 15,),
-
+                                SizedBox(
+                                  width: 15,
+                                ),
                                 Padding(
-                                  padding: const EdgeInsets.fromLTRB(0, 5,0,5),
+                                  padding: const EdgeInsets.fromLTRB(
+                                      0, 5, 0, 5),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         child: SizedBox(
-                                          width: 200,
-                                          child: Text(getTruncatedTitle(newsModelList[index].newsHead, 60),
+                                          width: size.width/2,
+                                          child: Text(
+                                            getTruncatedTitle(
+                                                newsModelList[index]
+                                                    .newsHead
+                                                    .toString(),
+                                                50),
                                             maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
+                                            overflow:
+                                            TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.w700,
                                               color: Color(0xff0f172a),
-                                            ),),
+                                            ),
+                                          ),
                                         ),
                                       ),
-
-                                      SizedBox(height: 10,),
-
                                       SizedBox(
-                                        width: 200,
-                                        child: Text("Posted By: " + newsModelList[index].newsPostedBy,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: Color(0xff64748b),
-                                          ),),
+                                        height: 10,
                                       ),
-
-                                      SizedBox(height: 8,),
-
                                       SizedBox(
-                                        width: 200,
-                                        child: Text("Posted On: " + newsModelList[index].newsPostedOn,
+                                        width: size.width/2,
+                                        child: Text(
+                                          "Posted By: " +
+                                              getTruncatedAuthor(
+                                                  newsModelList[index]
+                                                      .newsPostedBy
+                                                      .toString(),
+                                                  30),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
                                             color: Color(0xff64748b),
-                                          ),),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 8,
+                                      ),
+                                      SizedBox(
+                                        width: size.width/2,
+                                        child: Text(
+                                          "Posted On: " +
+                                              getTruncatedDate(
+                                                  newsModelList[index]
+                                                      .newsPostedOn
+                                                      .toString(),
+                                                  30),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xff64748b),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -338,22 +475,32 @@ class _NewsFeedState extends State<NewsFeed> {
                             ),
                           ),
                         ),
-
                       );
                     }),
                   ),
-                ),
+                )
+                    : Center(child: CircularProgressIndicator())
               ],
             ),
-
           ),
         ),
       ),
     );
   }
+
   String getTruncatedTitle(String actualString, int maxLetters) {
     return actualString.length > maxLetters
-        ? actualString.substring(0, maxLetters) + "..."
+        ? actualString.substring(0, maxLetters) + ".."
+        : actualString;
+  }
+  String getTruncatedAuthor(String actualString, int maxLetters) {
+    return actualString.length > maxLetters
+        ? actualString.substring(0, maxLetters) + ".."
+        : actualString;
+  }
+  String getTruncatedDate(String actualString, int maxLetters) {
+    return actualString.length > maxLetters
+        ? actualString.substring(0, 10) + "at" + actualString.substring(11, maxLetters) + "..."
         : actualString;
   }
 }

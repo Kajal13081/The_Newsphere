@@ -1,11 +1,11 @@
 class NewsQueryModel
 {
-  late String newsHead;
-  late String newsDes;
-  late String newsImg;
-  late String newsUrl;
-  late String newsPostedBy;
-  late String newsPostedOn;
+  late String? newsHead;
+  late String? newsDes;
+  late String? newsImg;
+  late String? newsUrl;
+  late String? newsPostedBy;
+  late DateTime? newsPostedOn;
 
   NewsQueryModel({
     this.newsHead = "NEWS HEADLINE" ,
@@ -13,7 +13,7 @@ class NewsQueryModel
     this.newsImg = "SOME URL" ,
     this.newsUrl = "SOME URL",
     this.newsPostedBy = "POSTED BY",
-    this.newsPostedOn = "DATE POSTED ON",
+    this.newsPostedOn
 
   });
 
@@ -25,7 +25,7 @@ class NewsQueryModel
         newsImg: news["urlToImage"],
         newsUrl: news["url"],
         newsPostedBy: news["author"],
-        newsPostedOn: news["publishedAt"]
+        newsPostedOn: DateTime.parse(news['publishedAt'])
     );
   }
 }
